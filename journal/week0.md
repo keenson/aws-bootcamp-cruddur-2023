@@ -14,6 +14,8 @@ sudo ./aws/install
 
 ![awscli config](assets/budget.png)
 
+Here are the config files which i used to configure my budget and alarms [week-0 config files](https://github.com/keenson/aws-bootcamp-cruddur-2023/tree/main/aws/json)
+
 
 
 ### Create an Admin User and Generate AWS Credential
