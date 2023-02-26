@@ -2,7 +2,7 @@
 
 
 # Homework
-I impelemented the notification endpoint and the react page notification frontend on the fronend, while I also added the containers for for both dynamodb and postgres.
+I implemented the notification endpoint and the react page notification frontend on the fronend, while I also added the containers for for both dynamodb and postgres.
 
 [here is the link to the notification page ](https://github.com/keenson/aws-bootcamp-cruddur-2023/blob/main/frontend-react-js/src/pages/NotificationsFeedPage.js)
 
