@@ -1,0 +1,130 @@
+
+
+
+export HONEYCOMB_API_KEY="my-honeycomb-api-key"
+
+gp env HONEYCOMB_API_KEY="my-honeycomb-api-key"
+
+gp env HONEYCOMB_SERVICE_NAME="backend-flask"
+export HONEYCOMB_SERVICE_NAME="backend-flask"
+
+OTEL_SERVICE_NAME: "backend=flask"
+OTEL_EXPORTER_OTLP_ENDPOINT: "https://api.honeycomb.io"
+OTEL_EXPORTER_OTLP_HEADERS: "x-honeycomb-team=${HONEYCOMB_API_KEY}"
+
+
+
+paste the following in flask:
+
+opentelemetry-api 
+opentelemetry-sdk 
+opentelemetry-exporter-otlp-proto-http 
+opentelemetry-instrumentation-flask 
+opentelemetry-instrumentation-requests
+
+
+add to app.py:-
+
+from opentelemetry import trace
+from opentelemetry.instrumentation.flask import FlaskInstrumentor
+from opentelemetry.instrumentation.requests import RequestsInstrumentor
+from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+
+
+# Initialize tracing and an exporter that can send data to Honeycomb
+provider = TracerProvider()
+processor = BatchSpanProcessor(OTLPSpanExporter())
+provider.add_span_processor(processor)
+trace.set_tracer_provider(provider)
+tracer = trace.get_tracer(__name__)
+
+# Initialize automatic instrumentation with Flask
+app = Flask(__name__)
+FlaskInstrumentor().instrument_app(app)
+RequestsInstrumentor().instrument()
+
+
+
+      span = trace.get_current_span()
+      now = datetime.now(timezone.utc).astimezone()
+      span.set_attribute("app.now", now.isoformat())
+
+
+###########################################################################################################################################
+
+X-RAY
+########################################################################################################################################
+
+
+cd into frontend
+ npm install
+
+Add to the requirements.txt
+
+```
+aws-xray-sdk
+```
+
+
+
+export AWS_REGION="ca-central-1"
+gp env AWS_REGION="ca-central-1"
+
+
+
+
+aws xray create-group \
+   --group-name "Cruddur" \
+   --filter-expression "service(\"backend-flask\") {fault OR error}"
+
+
+
+Add Deamon Service to Docker Compose
+```
+  xray-daemon:
+    image: "amazon/aws-xray-daemon"
+    environment:
+      AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
+      AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
+      AWS_REGION: "us-east-1"
+    command:
+      - "xray -o -b xray-daemon:2000"
+    ports:
+      - 2000:2000/udp
+```
+
+We need to add these two env vars to our backend-flask in our docker-compose.yml file
+
+      AWS_XRAY_URL: "*4567-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}*"
+      AWS_XRAY_DAEMON_ADDRESS: "xray-daemon:2000"
+
+
+##############################################################################################
+
+Implement cloudwatch logs to directly get imformation from the application
+
+138accd1449147fd962c334591c1ed06
+
+export ROLLBAR_ACCESS_TOKEN="138accd1449147fd962c334591c1ed06"
+gp env ROLLBAR_ACCESS_TOKEN="138accd1449147fd962c334591c1ed06"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
